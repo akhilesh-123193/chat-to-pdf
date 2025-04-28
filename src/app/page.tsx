@@ -133,10 +133,11 @@ export default function Home() {
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen bg-docuchat-beige-light text-docuchat-gray-dark">
+      <div className="flex h-screen bg-docuchat-beige-light text-docuchat-gray-dark font-sans">
+        {/* Sidebar */}
         <Sidebar className="w-64 border-r border-docuchat-beige-dark flex-shrink-0">
-          <SidebarHeader>
-            <h2 className="text-lg font-semibold text-docuchat-gray-dark">Message History</h2>
+          <SidebarHeader className="text-center font-semibold text-xl py-4">
+            DocuChat
           </SidebarHeader>
           <SidebarContent>
             <ScrollArea className="h-full">
@@ -145,9 +146,9 @@ export default function Home() {
                   <div
                     key={index}
                     className={cn(
-                      "p-2 rounded-md",
+                      "p-2 rounded-md break-words",
                       chat.type === "user"
-                        ? "bg-docuchat-beige-medium text-docuchat-gray-dark"
+                        ? "bg-docuchat-medium-beige text-docuchat-gray-dark"
                         : "bg-docuchat-beige-dark text-docuchat-gray-dark"
                     )}
                   >
@@ -157,14 +158,17 @@ export default function Home() {
               </div>
             </ScrollArea>
           </SidebarContent>
+          <footer className="bg-docuchat-beige-medium text-docuchat-gray-dark p-4 text-center rounded-md mt-4">
+            <p className="text-sm">
+              &copy; {new Date().getFullYear()} DocuChat. All rights reserved.
+            </p>
+          </footer>
         </Sidebar>
 
+        {/* Main Chat Area */}
         <main className="flex flex-col flex-grow p-4">
-          <header className="bg-docuchat-beige-medium text-docuchat-gray-dark p-6 shadow-md rounded-md mb-4">
-            <h1 className="text-3xl font-semibold text-center">DocuChat</h1>
-          </header>
-
-          <Card className="mb-4">
+          {/* Upload Document Section */}
+          <Card className="mb-4 rounded-2xl shadow-md">
             <CardHeader>
               <h2 className="text-lg font-semibold">Upload Document</h2>
             </CardHeader>
@@ -178,78 +182,74 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <div className="flex-grow overflow-y-auto">
-            {chatHistory.map((chat, index) => (
-              <div
-                key={index}
-                className={cn(
-                  "mb-2 p-3 rounded-md",
-                  chat.type === "user"
-                    ? "bg-docuchat-beige-medium text-docuchat-gray-dark self-end"
-                    : "bg-docuchat-beige-dark text-docuchat-gray-dark self-start"
-                )}
-                style={{maxWidth: '80%', alignSelf: chat.type === "user" ? 'flex-end' : 'flex-start'}}
-              >
-                {chat.message}
-              </div>
-            ))}
+          {/* Chat Messages Area */}
+          <ScrollArea className="flex-grow overflow-y-auto mb-4">
+            <div className="flex flex-col space-y-2">
+              {chatHistory.map((chat, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "mb-2 p-3 rounded-2xl max-w-2xl break-words",
+                    chat.type === "user"
+                      ? "bg-docuchat-medium-beige text-docuchat-gray-dark self-end"
+                      : "bg-docuchat-beige-dark text-docuchat-gray-dark self-start"
+                  )}
+                  style={{ alignSelf: chat.type === "user" ? "flex-end" : "flex-start" }}
+                >
+                  {chat.message}
+                </div>
+              ))}
 
-            {aiResponse && (
-              <Card className="mt-4">
-                <CardHeader>
-                  <h2 className="text-lg font-semibold">Response</h2>
-                </CardHeader>
-                <CardContent className="bg-docuchat-beige-medium text-docuchat-gray-dark">
-                  <p>{aiResponse}</p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+              {aiResponse && (
+                <Card className="mt-4 rounded-2xl shadow-md max-w-2xl">
+                  <CardHeader>
+                    <h2 className="text-lg font-semibold">Response</h2>
+                  </CardHeader>
+                  <CardContent className="bg-docuchat-beige-medium text-docuchat-gray-dark">
+                    <p>{aiResponse}</p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </ScrollArea>
 
-          <Card>
+          {/* Ask Question Section */}
+          <Card className="rounded-2xl shadow-md">
             <CardHeader>
               <h2 className="text-lg font-semibold">Ask Question</h2>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full">
-                    <FormField
-                      control={form.control}
-                      name="question"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel>Type your question here</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Type your question..."
-                              className="bg-docuchat-beige-light border-docuchat-beige-dark text-docuchat-gray-dark"
-                              {...field}
-                              value={currentQuestion} // Use the currentQuestion state
-                              onChange={(e) => {
-                                field.onChange(e); // Keep the form state updated
-                                setCurrentQuestion(e.target.value); // Update the currentQuestion state
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="ml-2 docuchat-terracotta">
-                      Ask
-                    </Button>
-                  </form>
-                </Form>
-              </div>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full items-end">
+                  <FormField
+                    control={form.control}
+                    name="question"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel>Type your question here</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Type your question..."
+                            className="bg-docuchat-beige-light border-docuchat-beige-dark text-docuchat-gray-dark rounded-2xl"
+                            {...field}
+                            value={currentQuestion} // Use the currentQuestion state
+                            onChange={(e) => {
+                              field.onChange(e); // Keep the form state updated
+                              setCurrentQuestion(e.target.value); // Update the currentQuestion state
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="ml-2 docuchat-terracotta rounded-2xl h-11">
+                    Ask
+                  </Button>
+                </form>
+              </Form>
             </CardContent>
           </Card>
-
-          <footer className="bg-docuchat-beige-medium text-docuchat-gray-dark p-4 text-center rounded-md mt-4">
-            <p className="text-sm">
-              &copy; {new Date().getFullYear()} DocuChat. All rights reserved.
-            </p>
-          </footer>
         </main>
       </div>
     </SidebarProvider>

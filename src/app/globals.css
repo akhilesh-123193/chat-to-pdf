@@ -41,6 +41,17 @@ body {
     --docuchat-gray-dark: #4A4A4A;
     --docuchat-gray-warm: #8B7E74;
     --docuchat-terracotta: #A97155;
+
+    /* New sidebar colors */
+    --sidebar-background: #faf7f5;
+    --sidebar-foreground: #4A4A4A;
+    --sidebar-primary: #A97155;
+    --sidebar-primary-foreground: #fff;
+    --sidebar-accent: #EAE0D5;
+    --sidebar-accent-foreground: #4A4A4A;
+    --sidebar-border: #C8B6A6;
+    --sidebar-ring: #A97155;
+
   }
 
   .dark {
@@ -75,6 +86,16 @@ body {
     --docuchat-gray-dark: #D4D4D4;
     --docuchat-gray-warm: #A39487;
     --docuchat-terracotta: #C78A6A;
+
+    /* Dark mode sidebar colors */
+    --sidebar-background: #201E1C;
+    --sidebar-foreground: #D4D4D4;
+    --sidebar-primary: #C78A6A;
+    --sidebar-primary-foreground: #fff;
+    --sidebar-accent: #4A443D;
+    --sidebar-accent-foreground: #D4D4D4;
+    --sidebar-border: #685D54;
+    --sidebar-ring: #C78A6A;
   }
 
   .dark {
@@ -118,3 +139,4 @@ body {
   background-color: hsl(var(--docuchat-terracotta));
   color: white; /* Or a light beige for contrast */
 }
+
