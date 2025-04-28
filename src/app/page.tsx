@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useCallback } from "react";
@@ -42,6 +41,7 @@ export default function Home() {
     { type: "user" | "ai"; message: string }[]
   >([]);
   const [questionSuggestions, setQuestionSuggestions] = useState<string[]>([]);
+  const [aiResponse, setAiResponse] = useState<string | null>(null); // Added state for AI response
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -141,6 +141,7 @@ export default function Home() {
     }
 
     setChatHistory((prev) => [...prev, { type: "user", message: question }]);
+    setAiResponse(null); // Clear previous response
 
     try {
       const response = await answerQuestionsFromDocument({
@@ -148,10 +149,8 @@ export default function Home() {
         question: question,
       });
 
-      setChatHistory((prev) => [
-        ...prev,
-        { type: "ai", message: response.answer },
-      ]);
+      setAiResponse(response.answer); // Set the AI response
+      setChatHistory((prev) => [...prev, { type: "ai", message: response.answer }]);
     } catch (error: any) {
       console.error("Error asking question:", error);
       toast({
@@ -237,6 +236,14 @@ export default function Home() {
                 </form>
               </Form>
             </div>
+
+            {/* Display AI Response */}
+            {aiResponse && (
+              <div className="mt-4 p-4 rounded-md bg-accent text-accent-foreground">
+                <p className="text-sm font-medium">Response:</p>
+                <p>{aiResponse}</p>
+              </div>
+            )}
 
             {questionSuggestions.length > 0 && (
               <div className="mt-4">
