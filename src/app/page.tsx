@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
@@ -17,7 +17,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { answerQuestionsFromDocument } from "@/ai/flows/answer-questions-from-document";
-import { generateQuestionSuggestions } from "@/ai/flows/generate-question-suggestions";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
@@ -40,8 +39,8 @@ export default function Home() {
   const [chatHistory, setChatHistory] = useState<
     { type: "user" | "ai"; message: string }[]
   >([]);
-  const [questionSuggestions, setQuestionSuggestions] = useState<string[]>([]);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState<string>(""); // Track the current question being typed
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,10 +67,9 @@ export default function Home() {
       try {
         const dataUri = event.target?.result as string;
         setPdfDataUri(dataUri);
-        await generateSuggestions(dataUri);
         toast({
           title: "Success",
-          description: "File uploaded successfully and suggestions generated.",
+          description: "File uploaded successfully.",
         });
       } catch (error: any) {
         console.error("Error during file processing:", error);
@@ -93,42 +91,6 @@ export default function Home() {
     };
     reader.readAsDataURL(file);
   };
-
-
-  const generateSuggestions = useCallback(
-    async (dataUri: string) => {
-      try {
-        const base64String = dataUri.split(",")[1];
-        const decodedPdf = atob(base64String);
-
-        let pdfText = "";
-        for (let i = 0; i < decodedPdf.length; i++) {
-          pdfText += String.fromCharCode(decodedPdf.charCodeAt(i));
-        }
-
-        if (!pdfText) {
-          throw new Error("Could not extract text from PDF.");
-        }
-
-        const suggestions = await generateQuestionSuggestions({
-          documentText: pdfText,
-        });
-        setQuestionSuggestions(suggestions.suggestions);
-        toast({
-          title: "Suggestions Generated",
-          description: "Successfully generated question suggestions.",
-        });
-      } catch (error: any) {
-        console.error("Error generating suggestions:", error);
-        toast({
-          title: "Error generating suggestions",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    },
-    []
-  );
 
   const askQuestion = async (question: string) => {
     if (!pdfDataUri) {
@@ -164,10 +126,7 @@ export default function Home() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     await askQuestion(values.question);
     form.reset();
-  };
-
-  const handleSuggestionClick = (suggestion: string) => {
-    form.setValue("question", suggestion);
+    setCurrentQuestion(""); // Clear the current question after submitting
   };
 
   const isMobile = useIsMobile();
@@ -245,29 +204,6 @@ export default function Home() {
                 </CardContent>
               </Card>
             )}
-
-            {questionSuggestions.length > 0 && (
-              <Card className="mt-4">
-                <CardHeader>
-                  <h2 className="text-lg font-semibold">Suggestions</h2>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {questionSuggestions.map((suggestion, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        size="sm"
-                        className="docuchat-warm-gray"
-                        onClick={() => handleSuggestionClick(suggestion)}
-                      >
-                        {suggestion}
-                      </Button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           <Card>
@@ -289,6 +225,11 @@ export default function Home() {
                               placeholder="Type your question..."
                               className="bg-docuchat-beige-light border-docuchat-beige-dark text-docuchat-gray-dark"
                               {...field}
+                              value={currentQuestion} // Use the currentQuestion state
+                              onChange={(e) => {
+                                field.onChange(e); // Keep the form state updated
+                                setCurrentQuestion(e.target.value); // Update the currentQuestion state
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
