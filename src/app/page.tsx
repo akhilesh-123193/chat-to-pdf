@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useCallback } from "react";
@@ -21,6 +22,12 @@ import { answerQuestionsFromDocument } from "@/ai/flows/answer-questions-from-do
 import { generateQuestionSuggestions } from "@/ai/flows/generate-question-suggestions";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
 
 const formSchema = z.object({
   question: z.string().min(2, {
@@ -34,7 +41,6 @@ export default function Home() {
   const [chatHistory, setChatHistory] = useState<
     { type: "user" | "ai"; message: string }[]
   >([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [questionSuggestions, setQuestionSuggestions] = useState<string[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -134,7 +140,6 @@ export default function Home() {
       return;
     }
 
-    setIsLoading(true);
     setChatHistory((prev) => [...prev, { type: "user", message: question }]);
 
     try {
@@ -154,8 +159,6 @@ export default function Home() {
         description: error.message,
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -169,65 +172,74 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      <header className="bg-docuchat-blue text-primary-foreground p-6 shadow-md">
-        <h1 className="text-3xl font-semibold text-center">DocuChat AI</h1>
-        <p className="text-sm text-center mt-2">
-          Upload a PDF and ask questions!
-        </p>
-      </header>
-
-      <main className="container mx-auto p-4 flex flex-col flex-grow">
-        <Card className="mb-4">
-          <CardHeader>
-            <h2 className="text-lg font-semibold">Upload PDF</h2>
-            <p className="text-sm text-muted-foreground">
-              Upload a PDF document to start chatting with AI.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <Input
-              type="file"
-              accept=".pdf"
-              onChange={handleFileUpload}
-              disabled={isLoading}
-            />
-          </CardContent>
-        </Card>
-
-        <Card className="flex-grow">
-          <CardHeader>
-            <h2 className="text-lg font-semibold">Chat</h2>
-            <p className="text-sm text-muted-foreground">
-              Ask questions related to the uploaded PDF.
-            </p>
-          </CardHeader>
-          <CardContent className="flex flex-col h-full">
-            <ScrollArea className="flex-grow mb-4">
-              <div className="space-y-2">
+    <SidebarProvider>
+      <div className="flex h-screen bg-background text-foreground">
+        <Sidebar className="w-64 border-r border-border flex-shrink-0">
+          <SidebarHeader>
+            <h2 className="text-lg font-semibold">Message History</h2>
+          </SidebarHeader>
+          <SidebarContent>
+            <ScrollArea className="h-full">
+              <div className="space-y-2 p-2">
                 {chatHistory.map((chat, index) => (
                   <div
                     key={index}
                     className={cn(
-                      "p-3 rounded-lg",
+                      "p-2 rounded-md",
                       chat.type === "user"
-                        ? "bg-secondary text-secondary-foreground self-end"
-                        : "bg-accent text-accent-foreground self-start"
+                        ? "bg-secondary text-secondary-foreground"
+                        : "bg-accent text-accent-foreground"
                     )}
                   >
                     {chat.message}
                   </div>
                 ))}
-                {isLoading && (
-                  <div className="p-3 rounded-lg bg-accent text-accent-foreground self-start">
-                    Thinking...
-                  </div>
-                )}
               </div>
             </ScrollArea>
+          </SidebarContent>
+        </Sidebar>
+
+        <main className="flex flex-col flex-grow">
+          <header className="bg-secondary text-primary-foreground p-6 shadow-md">
+            <h1 className="text-3xl font-semibold text-center">DocuChat</h1>
+          </header>
+
+          <div className="p-4">
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={handleFileUpload}
+              className="mb-4"
+            />
+
+            <div className="flex items-center">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full">
+                  <FormField
+                    control={form.control}
+                    name="question"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel>Ask your question here</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Type your question..."
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="ml-2">
+                    Ask
+                  </Button>
+                </form>
+              </Form>
+            </div>
 
             {questionSuggestions.length > 0 && (
-              <div className="mb-4">
+              <div className="mt-4">
                 <p className="text-sm font-medium">Suggestions:</p>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {questionSuggestions.map((suggestion, index) => (
@@ -243,40 +255,15 @@ export default function Home() {
                 </div>
               </div>
             )}
+          </div>
 
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                <FormField
-                  control={form.control}
-                  name="question"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Question</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Ask your question here..."
-                          {...field}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Submitting..." : "Ask"}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </main>
-
-      <footer className="bg-secondary text-secondary-foreground p-4 text-center">
-        <p className="text-sm">
-          &copy; {new Date().getFullYear()} DocuChat AI. All rights reserved.
-        </p>
-      </footer>
-    </div>
+          <footer className="bg-secondary text-secondary-foreground p-4 text-center">
+            <p className="text-sm">
+              &copy; {new Date().getFullYear()} DocuChat. All rights reserved.
+            </p>
+          </footer>
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }
