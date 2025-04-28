@@ -20,6 +20,7 @@ import {
 import { answerQuestionsFromDocument } from "@/ai/flows/answer-questions-from-document";
 import { generateQuestionSuggestions } from "@/ai/flows/generate-question-suggestions";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   question: z.string().min(2, {
@@ -207,11 +208,12 @@ export default function Home() {
                 {chatHistory.map((chat, index) => (
                   <div
                     key={index}
-                    className={`p-3 rounded-lg ${
+                    className={cn(
+                      "p-3 rounded-lg",
                       chat.type === "user"
                         ? "bg-secondary text-secondary-foreground self-end"
                         : "bg-accent text-accent-foreground self-start"
-                    }`}
+                    )}
                   >
                     {chat.message}
                   </div>
@@ -243,7 +245,7 @@ export default function Home() {
             )}
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 pb-12">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                 <FormField
                   control={form.control}
                   name="question"
