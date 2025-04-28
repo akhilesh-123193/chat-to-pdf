@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
@@ -42,7 +41,7 @@ export default function Home() {
     { type: "user" | "ai"; message: string }[]
   >([]);
   const [questionSuggestions, setQuestionSuggestions] = useState<string[]>([]);
-  const [aiResponse, setAiResponse] = useState<string | null>(null); // Added state for AI response
+  const [aiResponse, setAiResponse] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -69,7 +68,7 @@ export default function Home() {
       try {
         const dataUri = event.target?.result as string;
         setPdfDataUri(dataUri);
-        await generateSuggestions(dataUri); // Await the completion of generateSuggestions
+        await generateSuggestions(dataUri);
         toast({
           title: "Success",
           description: "File uploaded successfully and suggestions generated.",
@@ -142,7 +141,7 @@ export default function Home() {
     }
 
     setChatHistory((prev) => [...prev, { type: "user", message: question }]);
-    setAiResponse(null); // Clear previous response
+    setAiResponse(null);
 
     try {
       const response = await answerQuestionsFromDocument({
@@ -150,7 +149,7 @@ export default function Home() {
         question: question,
       });
 
-      setAiResponse(response.answer); // Set the AI response
+      setAiResponse(response.answer);
       setChatHistory((prev) => [...prev, { type: "ai", message: response.answer }]);
     } catch (error: any) {
       console.error("Error asking question:", error);
@@ -220,6 +219,57 @@ export default function Home() {
             </CardContent>
           </Card>
 
+          <div className="flex-grow overflow-y-auto">
+            {chatHistory.map((chat, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "mb-2 p-3 rounded-md",
+                  chat.type === "user"
+                    ? "bg-docuchat-beige-medium text-docuchat-gray-dark self-end"
+                    : "bg-docuchat-beige-dark text-docuchat-gray-dark self-start"
+                )}
+                style={{maxWidth: '80%', alignSelf: chat.type === "user" ? 'flex-end' : 'flex-start'}}
+              >
+                {chat.message}
+              </div>
+            ))}
+
+            {aiResponse && (
+              <Card className="mt-4">
+                <CardHeader>
+                  <h2 className="text-lg font-semibold">Response</h2>
+                </CardHeader>
+                <CardContent className="bg-docuchat-beige-medium text-docuchat-gray-dark">
+                  <p>{aiResponse}</p>
+                </CardContent>
+              </Card>
+            )}
+
+            {questionSuggestions.length > 0 && (
+              <Card className="mt-4">
+                <CardHeader>
+                  <h2 className="text-lg font-semibold">Suggestions</h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {questionSuggestions.map((suggestion, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        className="docuchat-warm-gray"
+                        onClick={() => handleSuggestionClick(suggestion)}
+                      >
+                        {suggestion}
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
           <Card>
             <CardHeader>
               <h2 className="text-lg font-semibold">Ask Question</h2>
@@ -253,41 +303,6 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Display AI Response */}
-          {aiResponse && (
-            <Card className="mt-4">
-              <CardHeader>
-                <h2 className="text-lg font-semibold">Response</h2>
-              </CardHeader>
-              <CardContent className="bg-docuchat-beige-medium text-docuchat-gray-dark">
-                <p>{aiResponse}</p>
-              </CardContent>
-            </Card>
-          )}
-
-          {questionSuggestions.length > 0 && (
-            <Card className="mt-4">
-              <CardHeader>
-                <h2 className="text-lg font-semibold">Suggestions</h2>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {questionSuggestions.map((suggestion, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      className="docuchat-warm-gray"
-                      onClick={() => handleSuggestionClick(suggestion)}
-                    >
-                      {suggestion}
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
           <footer className="bg-docuchat-beige-medium text-docuchat-gray-dark p-4 text-center rounded-md mt-4">
             <p className="text-sm">
