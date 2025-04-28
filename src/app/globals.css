@@ -4,73 +4,58 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+  @apply antialiased;
 }
 
 @layer base {
   :root {
-    --background: 0 0% 10%; /* Dark background */
-    --foreground: 46 85% 94%; /* Light gold foreground */
-    --card: 0 0% 10%;
-    --card-foreground: 46 85% 94%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 46 85% 94%;
-    --primary: 47 87% 63%; /* Gold primary color */
-    --primary-foreground: 0 0% 10%; /* Black primary foreground */
-    --secondary: 46 85% 14%; /* Dark gold secondary */
-    --secondary-foreground: 46 85% 94%;
-    --muted: 46 85% 14%;
-    --muted-foreground: 48 64% 52%;
-    --accent: 46 85% 14%;
-    --accent-foreground: 46 85% 94%;
+    --background: 26 29% 97%; /* Light beige */
+    --foreground: 0 0% 29%; /* Dark gray */
+    --card: 26 29% 97%;
+    --card-foreground: 0 0% 29%;
+    --popover: 26 29% 97%;
+    --popover-foreground: 0 0% 29%;
+    --primary: 23 34% 47%; /* Terracotta */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 28 26% 89%; /* Medium beige */
+    --secondary-foreground: 0 0% 29%;
+    --muted: 28 26% 89%;
+    --muted-foreground: 30 10% 51%; /* Warm gray */
+    --accent: 28 26% 89%;
+    --accent-foreground: 0 0% 29%;
     --destructive: 0 63% 57%;
-    --destructive-foreground: 46 85% 94%;
-    --border: 46 85% 14%;
-    --input: 46 85% 14%;
-    --ring: 47 87% 63%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 10% 51%;
+    --input: 30 10% 51%;
+    --ring: 23 34% 47%;
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 5%; /* Even darker sidebar */
-    --sidebar-foreground: 48 64% 52%;
-    --sidebar-primary: 47 87% 63%;
-    --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 46 85% 14%;
-    --sidebar-accent-foreground: 46 85% 94%;
-    --sidebar-border: 46 85% 14%;
-    --sidebar-ring: 47 87% 63%;
 
     --docuchat-blue: 210 84% 57%;
     --docuchat-green: 142 76% 54%;
   }
 
   .dark {
-    --background: 0 0% 10%;
-    --foreground: 46 85% 94%;
-    --card: 0 0% 10%;
-    --card-foreground: 46 85% 94%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 46 85% 94%;
-    --primary: 47 87% 63%;
-    --primary-foreground: 0 0% 10%;
-    --secondary: 46 85% 14%;
-    --secondary-foreground: 46 85% 94%;
-    --muted: 46 85% 14%;
-    --muted-foreground: 48 64% 52%;
-    --accent: 46 85% 14%;
-    --accent-foreground: 46 85% 94%;
+    --background: 26 29% 7%; /* Dark beige */
+    --foreground: 0 0% 90%; /* Light gray */
+    --card: 26 29% 7%;
+    --card-foreground: 0 0% 90%;
+    --popover: 26 29% 7%;
+    --popover-foreground: 0 0% 90%;
+    --primary: 23 34% 47%; /* Terracotta */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 28 26% 19%; /* Medium beige */
+    --secondary-foreground: 0 0% 90%;
+    --muted: 28 26% 19%;
+    --muted-foreground: 30 10% 51%; /* Warm gray */
+    --accent: 28 26% 19%;
+    --accent-foreground: 0 0% 90%;
     --destructive: 0 63% 57%;
-    --destructive-foreground: 46 85% 94%;
-    --border: 46 85% 14%;
-    --input: 46 85% 14%;
-    --ring: 47 87% 63%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 10% 51%;
+    --input: 30 10% 51%;
+    --ring: 23 34% 47%;
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 5%;
-    --sidebar-foreground: 48 64% 52%;
-    --sidebar-primary: 47 87% 63%;
-    --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 46 85% 14%;
-    --sidebar-accent-foreground: 46 85% 94%;
-    --sidebar-border: 46 85% 14%;
-    --sidebar-ring: 47 87% 63%;
 
     --docuchat-blue: 210 84% 57%;
     --docuchat-green: 142 76% 54%;
