@@ -29,10 +29,18 @@ body {
     --border: 30 10% 51%;
     --input: 30 10% 51%;
     --ring: 23 34% 47%;
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* Rounded corners */
 
     --docuchat-blue: 210 84% 57%;
     --docuchat-green: 142 76% 54%;
+
+    /* New color scheme - Claude AI inspired */
+    --docuchat-beige-light: #F9F5EB;
+    --docuchat-beige-medium: #EAE0D5;
+    --docuchat-beige-dark: #C8B6A6;
+    --docuchat-gray-dark: #4A4A4A;
+    --docuchat-gray-warm: #8B7E74;
+    --docuchat-terracotta: #A97155;
   }
 
   .dark {
@@ -55,10 +63,18 @@ body {
     --border: 30 10% 51%;
     --input: 30 10% 51%;
     --ring: 23 34% 47%;
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* Rounded corners */
 
     --docuchat-blue: 210 84% 57%;
     --docuchat-green: 142 76% 54%;
+
+    /* Dark mode - Claude AI inspired */
+    --docuchat-beige-light: #302D29;
+    --docuchat-beige-medium: #4A443D;
+    --docuchat-beige-dark: #685D54;
+    --docuchat-gray-dark: #D4D4D4;
+    --docuchat-gray-warm: #A39487;
+    --docuchat-terracotta: #C78A6A;
   }
 
   .dark {
@@ -74,4 +90,31 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Apply custom styles */
+.docuchat-light-beige {
+  background-color: hsl(var(--docuchat-beige-light));
+  color: hsl(var(--docuchat-gray-dark));
+}
+
+.docuchat-medium-beige {
+  background-color: hsl(var(--docuchat-beige-medium));
+}
+
+.docuchat-dark-beige {
+  background-color: hsl(var(--docuchat-beige-dark));
+}
+
+.docuchat-dark-gray {
+  color: hsl(var(--docuchat-gray-dark));
+}
+
+.docuchat-warm-gray {
+  color: hsl(var(--docuchat-gray-warm));
+}
+
+.docuchat-terracotta {
+  background-color: hsl(var(--docuchat-terracotta));
+  color: white; /* Or a light beige for contrast */
 }

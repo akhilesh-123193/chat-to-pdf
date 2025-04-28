@@ -27,6 +27,7 @@ import {
   SidebarHeader,
   SidebarProvider,
 } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const formSchema = z.object({
   question: z.string().min(2, {
@@ -170,12 +171,14 @@ export default function Home() {
     form.setValue("question", suggestion);
   };
 
+  const isMobile = useIsMobile();
+
   return (
     <SidebarProvider>
-      <div className="flex h-screen bg-background text-foreground">
-        <Sidebar className="w-64 border-r border-border flex-shrink-0">
+      <div className="flex h-screen bg-docuchat-beige-light text-docuchat-gray-dark">
+        <Sidebar className="w-64 border-r border-docuchat-beige-dark flex-shrink-0">
           <SidebarHeader>
-            <h2 className="text-lg font-semibold">Message History</h2>
+            <h2 className="text-lg font-semibold text-docuchat-gray-dark">Message History</h2>
           </SidebarHeader>
           <SidebarContent>
             <ScrollArea className="h-full">
@@ -186,8 +189,8 @@ export default function Home() {
                     className={cn(
                       "p-2 rounded-md",
                       chat.type === "user"
-                        ? "bg-secondary text-secondary-foreground"
-                        : "bg-accent text-accent-foreground"
+                        ? "bg-docuchat-beige-medium text-docuchat-gray-dark"
+                        : "bg-docuchat-beige-dark text-docuchat-gray-dark"
                     )}
                   >
                     {chat.message}
@@ -198,73 +201,95 @@ export default function Home() {
           </SidebarContent>
         </Sidebar>
 
-        <main className="flex flex-col flex-grow">
-          <header className="bg-secondary text-primary-foreground p-6 shadow-md">
+        <main className="flex flex-col flex-grow p-4">
+          <header className="bg-docuchat-beige-medium text-docuchat-gray-dark p-6 shadow-md rounded-md mb-4">
             <h1 className="text-3xl font-semibold text-center">DocuChat</h1>
           </header>
 
-          <div className="p-4">
-            <input
-              type="file"
-              accept=".pdf"
-              onChange={handleFileUpload}
-              className="mb-4"
-            />
+          <Card className="mb-4">
+            <CardHeader>
+              <h2 className="text-lg font-semibold">Upload Document</h2>
+            </CardHeader>
+            <CardContent>
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={handleFileUpload}
+                className="mb-4"
+              />
+            </CardContent>
+          </Card>
 
-            <div className="flex items-center">
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full">
-                  <FormField
-                    control={form.control}
-                    name="question"
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormLabel>Ask your question here</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Type your question..."
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="ml-2">
-                    Ask
-                  </Button>
-                </form>
-              </Form>
-            </div>
-
-            {/* Display AI Response */}
-            {aiResponse && (
-              <div className="mt-4 p-4 rounded-md bg-accent text-accent-foreground">
-                <p className="text-sm font-medium">Response:</p>
-                <p>{aiResponse}</p>
+          <Card>
+            <CardHeader>
+              <h2 className="text-lg font-semibold">Ask Question</h2>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full">
+                    <FormField
+                      control={form.control}
+                      name="question"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel>Type your question here</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Type your question..."
+                              className="bg-docuchat-beige-light border-docuchat-beige-dark text-docuchat-gray-dark"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="ml-2 docuchat-terracotta">
+                      Ask
+                    </Button>
+                  </form>
+                </Form>
               </div>
-            )}
+            </CardContent>
+          </Card>
 
-            {questionSuggestions.length > 0 && (
-              <div className="mt-4">
-                <p className="text-sm font-medium">Suggestions:</p>
+          {/* Display AI Response */}
+          {aiResponse && (
+            <Card className="mt-4">
+              <CardHeader>
+                <h2 className="text-lg font-semibold">Response</h2>
+              </CardHeader>
+              <CardContent className="bg-docuchat-beige-medium text-docuchat-gray-dark">
+                <p>{aiResponse}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {questionSuggestions.length > 0 && (
+            <Card className="mt-4">
+              <CardHeader>
+                <h2 className="text-lg font-semibold">Suggestions</h2>
+              </CardHeader>
+              <CardContent>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {questionSuggestions.map((suggestion, index) => (
                     <Button
                       key={index}
                       variant="outline"
                       size="sm"
+                      className="docuchat-warm-gray"
                       onClick={() => handleSuggestionClick(suggestion)}
                     >
                       {suggestion}
                     </Button>
                   ))}
                 </div>
-              </div>
-            )}
-          </div>
+              </CardContent>
+            </Card>
+          )}
 
-          <footer className="bg-secondary text-secondary-foreground p-4 text-center">
+          <footer className="bg-docuchat-beige-medium text-docuchat-gray-dark p-4 text-center rounded-md mt-4">
             <p className="text-sm">
               &copy; {new Date().getFullYear()} DocuChat. All rights reserved.
             </p>
@@ -274,4 +299,3 @@ export default function Home() {
     </SidebarProvider>
   );
 }
-
