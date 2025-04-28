@@ -43,7 +43,7 @@ export default function Home() {
     },
   });
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
       toast({
@@ -57,18 +57,36 @@ export default function Home() {
     setPdfFile(file);
 
     const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUri = event.target?.result as string;
-      setPdfDataUri(dataUri);
-      generateSuggestions(dataUri);
+    reader.onload = async (event) => {
+      try {
+        const dataUri = event.target?.result as string;
+        setPdfDataUri(dataUri);
+        await generateSuggestions(dataUri); // Await the completion of generateSuggestions
+        toast({
+          title: "Success",
+          description: "File uploaded successfully and suggestions generated.",
+        });
+      } catch (error: any) {
+        console.error("Error during file processing:", error);
+        toast({
+          title: "Error",
+          description: `File upload failed: ${error.message}`,
+          variant: "destructive",
+        });
+      }
+    };
+
+    reader.onerror = (error) => {
+      console.error("FileReader error:", error);
+      toast({
+        title: "Error",
+        description: `Failed to read file: ${error}`,
+        variant: "destructive",
+      });
     };
     reader.readAsDataURL(file);
-
-    toast({
-      title: "Success",
-      description: "File uploaded successfully.",
-    });
   };
+
 
   const generateSuggestions = useCallback(
     async (dataUri: string) => {
@@ -80,11 +98,21 @@ export default function Home() {
         for (let i = 0; i < decodedPdf.length; i++) {
           pdfText += String.fromCharCode(decodedPdf.charCodeAt(i));
         }
+
+        if (!pdfText) {
+          throw new Error("Could not extract text from PDF.");
+        }
+
         const suggestions = await generateQuestionSuggestions({
           documentText: pdfText,
         });
         setQuestionSuggestions(suggestions.suggestions);
+        toast({
+          title: "Suggestions Generated",
+          description: "Successfully generated question suggestions.",
+        });
       } catch (error: any) {
+        console.error("Error generating suggestions:", error);
         toast({
           title: "Error generating suggestions",
           description: error.message,
@@ -119,6 +147,7 @@ export default function Home() {
         { type: "ai", message: response.answer },
       ]);
     } catch (error: any) {
+      console.error("Error asking question:", error);
       toast({
         title: "Error",
         description: error.message,
