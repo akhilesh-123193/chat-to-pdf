@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
@@ -24,6 +24,7 @@ import {
   SidebarContent,
   SidebarHeader,
   SidebarProvider,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -40,7 +41,8 @@ export default function Home() {
     { type: "user" | "ai"; message: string }[]
   >([]);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState<string>(""); // Track the current question being typed
+  const chatHistoryRef = useRef<HTMLDivElement>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,6 +63,7 @@ export default function Home() {
     }
 
     setPdfFile(file);
+    setUploadedFileName(file.name);
 
     const reader = new FileReader();
     reader.onload = async (event) => {
@@ -126,8 +129,13 @@ export default function Home() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     await askQuestion(values.question);
     form.reset();
-    setCurrentQuestion(""); // Clear the current question after submitting
   };
+
+  useEffect(() => {
+    if (chatHistoryRef.current) {
+      chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
 
   const isMobile = useIsMobile();
 
@@ -158,11 +166,11 @@ export default function Home() {
               </div>
             </ScrollArea>
           </SidebarContent>
-          <footer className="bg-docuchat-beige-medium text-docuchat-gray-dark p-4 text-center rounded-md mt-4">
+          <SidebarFooter className="bg-docuchat-beige-medium text-docuchat-gray-dark p-4 text-center rounded-md mt-4">
             <p className="text-sm">
               &copy; {new Date().getFullYear()} DocuChat. All rights reserved.
             </p>
-          </footer>
+          </SidebarFooter>
         </Sidebar>
 
         {/* Main Chat Area */}
@@ -179,11 +187,16 @@ export default function Home() {
                 onChange={handleFileUpload}
                 className="mb-4"
               />
+              {uploadedFileName && (
+                <p className="text-sm text-docuchat-gray-warm">
+                  Uploaded: {uploadedFileName}
+                </p>
+              )}
             </CardContent>
           </Card>
 
           {/* Chat Messages Area */}
-          <ScrollArea className="flex-grow overflow-y-auto mb-4">
+          <ScrollArea className="flex-grow overflow-y-auto mb-4" ref={chatHistoryRef}>
             <div className="flex flex-col space-y-2">
               {chatHistory.map((chat, index) => (
                 <div
@@ -232,11 +245,6 @@ export default function Home() {
                             placeholder="Type your question..."
                             className="bg-docuchat-beige-light border-docuchat-beige-dark text-docuchat-gray-dark rounded-2xl"
                             {...field}
-                            value={currentQuestion} // Use the currentQuestion state
-                            onChange={(e) => {
-                              field.onChange(e); // Keep the form state updated
-                              setCurrentQuestion(e.target.value); // Update the currentQuestion state
-                            }}
                           />
                         </FormControl>
                         <FormMessage />
