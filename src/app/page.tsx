@@ -243,7 +243,7 @@ export default function Home() {
             )}
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 pb-12">
                 <FormField
                   control={form.control}
                   name="question"
